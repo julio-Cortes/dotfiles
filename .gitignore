@@ -1,0 +1,32 @@
+# Neovim swap files
+*.swp
+
+# Neovim session files
+*.nvim
+
+# Neovim undo files
+*.un~
+
+# Neovim backup files
+*.bak
+
+# Neovim tag files
+tags
+
+# Neovim plugin directory
+plug/
+
+# Neovim coc.nvim extension directory
+coc.nvim/
+
+# Neovim language server log
+nvim-lsp.log
+
+# Neovim temporary files
+*~
+
+# Neovim undo directories
+.undo/
+
+# Neovim state directories
+.state/
