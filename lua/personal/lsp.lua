@@ -5,7 +5,8 @@ lsp_zero.on_attach(function(client, bufnr)
         buffer = bufnr,
         remap = false
     }
-    vim.keymap.set('n', 'gd', '<cmd>lua require("telescope.builtin").lsp_definitions()<CR>', opts)
+    vim.keymap.set('n', 'gd', '<cmd>lua require("fzf-lua").lsp_definitions()<CR>', opts)
+    vim.keymap.set('n', 'gr', '<cmd>lua require("fzf-lua").lsp_references()<CR>', opts)
     vim.keymap.set('n', 'gf', function()
         vim.lsp.buf.declaration()
     end, opts)
@@ -16,14 +17,33 @@ lsp_zero.on_attach(function(client, bufnr)
         vim.lsp.buf.code_action()
     end, opts)
 end)
+-- lsp_zero.extend_lspconfig({
+-- })
 
 require('mason').setup({})
 require('mason-lspconfig').setup({
     handlers = { lsp_zero.default_setup,
-        require('lspconfig').ruby_ls.setup {
+        require('lspconfig').html.setup {
+            filetypes = {
+                "html", "eruby"
+            },
+            settings = {
+                html = {
+                    format = {
+                        wrapAttributes = "auto",
+                        templating = "true",
+
+                    }
+                }
+            }
+        },
+        require('lspconfig').ruby_lsp.setup {
             root_dir = function()
                 return vim.fn.getcwd()
-            end
+            end,
+            -- filetypes = {
+            --     "ruby", "eruby"
+            -- }
         },
         require 'lspconfig'.pylsp.setup {
             settings = {
@@ -37,23 +57,13 @@ require('mason-lspconfig').setup({
                 }
             }
         },
-        require 'lspconfig'.csharp_ls.setup {}
     }
 })
 
 local cmp = require('cmp')
-local cmp_select = {
-    behavior = cmp.SelectBehavior.Select
-}
-
--- this is the function that loads the extra snippets to luasnip
--- from rafamadriz/friendly-snippets
-require('luasnip.loaders.from_vscode').lazy_load()
 
 cmp.setup({
     sources = { {
-        name = "copilot"
-    }, {
         name = 'path'
     }, {
         name = 'nvim_lsp'
@@ -64,9 +74,14 @@ cmp.setup({
         keyword_length = 3
     } },
     formatting = lsp_zero.cmp_format(),
+    -- mapping = {
+    --     ['<C-\\>'] = cmp.mapping.confirm({ select = true }),
+    --     ['<C-s>'] = cmp.mapping(cmp.mapping.select_prev_item(), { 'i', 'c' }),
+    --     ['<C-L>'] = cmp.mapping(cmp.mapping.select_next_item(), { 'i', 'c' }),
+    -- },
     mapping = cmp.mapping.preset.insert({
-        ['<C-Space>'] = cmp.mapping.complete(),
         ['<C-\\>'] = cmp.mapping.confirm {
+
             behavior = cmp.ConfirmBehavior.Replace,
             select = true
         },
@@ -75,22 +90,18 @@ cmp.setup({
                 cmp.select_next_item({
                     behavior = cmp.SelectBehavior.Insert
                 })
-            elseif luasnip.expand_or_locally_jumpable() then
-                luasnip.expand_or_jump()
             else
                 fallback()
             end
         end, { 'i', 's' }),
-        ['<S-]>'] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-                cmp.select_prev_item({
-                    behavior = cmp.SelectBehavior.Insert
-                })
-            elseif luasnip.expand_or_locally_jumpable() then
-                luasnip.expand_or_jump()
-            else
-                fallback()
-            end
-        end, { 'i', 's' })
     })
 })
+
+local isLspDiagnosticsVisible = false
+vim.keymap.set("n", "<leader>d", function()
+    isLspDiagnosticsVisible = not isLspDiagnosticsVisible
+    vim.diagnostic.config({
+        virtual_text = isLspDiagnosticsVisible,
+        underline = isLspDiagnosticsVisible
+    })
+end)

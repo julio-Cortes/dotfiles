@@ -10,14 +10,6 @@ return {
     end,
     'gpanders/editorconfig.nvim',
     {
-        "iamcco/markdown-preview.nvim",
-        cmd = {"MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop"},
-        ft = {"markdown"},
-        build = function()
-            vim.fn["mkdp#util#install"]()
-        end
-    },
-    {
         "lukas-reineke/indent-blankline.nvim",
         main = "ibl",
         config = function()

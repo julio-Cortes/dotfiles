@@ -26,66 +26,25 @@ vim.keymap.set("n", "<C-h>", '<C-w>h')
 vim.keymap.set("n", "<C-j>", '<C-w>j')
 vim.keymap.set("n", "<C-k>", '<C-w>k')
 vim.keymap.set("n", "<C-l>", '<C-w>l')
-vim.keymap.set("n", "<C-\\>", '<cmd>:.cc<CR>')
 
 vim.keymap.set("n", "<leader>nn", '<cmd>:set relativenumber!<CR>')
 
 vim.keymap.set("n", "<C-a>", "<nop>")
 
 -- hop
-vim.keymap.set('n', '<leader>z', '<cmd>:HopWord<CR>')
-vim.keymap.set('x', '<leader>z', '<cmd>:HopWord<CR>')
 vim.keymap.set("n", "f", ":HopChar1<cr>")
 vim.keymap.set("x", "f", ":HopChar1<cr>")
 
-----harpoon
-local mark = require("harpoon.mark")
-local ui = require("harpoon.ui")
+------harpoon
+local harpoon = require("harpoon")
+
+harpoon:setup()
 
 
-vim.keymap.set("n", "<leader>a", mark.add_file, {
-    desc = "[A]dd current file to harpoon"
-})
-vim.keymap.set("n", "<C-e>", ui.toggle_quick_menu)
-
-vim.keymap.set("n", "<C-n>", function()
-    ui.nav_prev()
-end)
-vim.keymap.set("n", "<C-m>", function()
-    ui.nav_next()
-end)
---
--- -- Grapple
--- vim.keymap.set("n", "<leader>a", function()
---     require("grapple").toggle()
--- end)
--- vim.keymap.set("n", "<C-e>", function()
---     require("grapple").toggle_tags()
--- end)
--- vim.keymap.set("n", "<C-n>", function()
---     require("grapple").cycle_forward()
--- end)
--- vim.keymap.set("n", "<C-m>", function()
---     require("grapple").cycle_backward()
--- end)
--- vim.keymap.set("n", "<S-e>", function()
---     require("grapple").toggle_scopes()
--- end)
--- vim.keymap.set("n", "<leader>x", function()
---     require("grapple").use_scope("cwd")
--- end)
--- vim.keymap.set("n", "<leader>b", function()
---     require("grapple").use_scope("git_branch")
--- end)
-
-require('buffalo').setup({
-    tab_commands = nil
-
-})
-local buffalo = require("buffalo.ui")
-
-vim.keymap.set("n", "<C-space>", buffalo.toggle_buf_menu, { noremap = true })
-
+vim.keymap.set("n", "<leader>a", function() harpoon:list():add() end)
+vim.keymap.set("n", "<C-e>", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end)
+vim.keymap.set("n", "<C-n>", function() harpoon:list():prev() end)
+vim.keymap.set("n", "<C-m>", function() harpoon:list():next() end)
 
 
 
@@ -97,8 +56,38 @@ vim.keymap.set("n", "<leader>gs", vim.cmd.Git, {
 vim.keymap.set("n", "<leader>gb", '<cmd>:Git blame<cr>', {
     desc = '[G]it blame'
 });
-vim.keymap.set('n', '<leader>gd', '<cmd>:Gvdiffsplit<cr>', {
-    desc = '[G]it diff'
-})
 
-vim.keymap.set('n', '<leader>tt', '<cmd>:Explore<cr>')
+
+--format
+
+vim.keymap.set('n','<C-f>', '<cmd>:LspZeroFormat<cr>',{remap=true})
+-- vim.keymap.set('n','<C-f>', function()
+--     local filetype = vim.bo.filetype
+--     if (filetype == "eruby") then
+--         local filepath = vim.fn.setreg('+', vim.fn.expand('%:p:.'))
+--         print("erb-format" .. filepath)
+--         vim.cmd("erb-format" .. filepath)
+--     end
+
+-- end,{remap=true})
+
+require("oil").setup({
+    win_options = {
+        list = true
+    }
+})
+vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
+
+local hipatterns = require('mini.hipatterns')
+hipatterns.setup({
+  highlighters = {
+    -- Highlight standalone 'FIXME', 'HACK', 'TODO', 'NOTE'
+    fixme = { pattern = '%f[%w]()FIXME()%f[%W]', group = 'MiniHipatternsFixme' },
+    hack  = { pattern = '%f[%w]()HACK()%f[%W]',  group = 'MiniHipatternsHack'  },
+    todo  = { pattern = '%f[%w]()TODO()%f[%W]',  group = 'MiniHipatternsTodo'  },
+    note  = { pattern = '%f[%w]()NOTE()%f[%W]',  group = 'MiniHipatternsNote'  },
+
+    -- Highlight hex color strings (`#rrggbb`) using that color
+    hex_color = hipatterns.gen_highlighter.hex_color(),
+  },
+})

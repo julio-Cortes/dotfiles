@@ -1,3 +1,3 @@
 return {
-    'tpope/vim-vinegar'
+    'stevearc/oil.nvim',
 }
