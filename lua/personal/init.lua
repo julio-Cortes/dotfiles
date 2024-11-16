@@ -41,7 +41,7 @@ require 'nvim-treesitter.configs'.on_config_done = function()
 end
 
 
---vim.opt.termguicolors = true
+-- vim.opt.termguicolors = true
 vim.cmd('colorscheme tokyonight-storm')
 --vim.cmd("colorscheme rose-pine")
 --vim.cmd("colorscheme kanagawa")

@@ -6,6 +6,7 @@ return {
     end,
     'williamboman/mason.nvim',
     'williamboman/mason-lspconfig.nvim',
+    'stevearc/conform.nvim',
     'hrsh7th/nvim-cmp',
     'hrsh7th/cmp-nvim-lsp',
     'hrsh7th/cmp-buffer',

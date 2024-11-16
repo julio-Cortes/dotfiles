@@ -5,10 +5,6 @@ vim.api.nvim_create_user_command("Crp", function()
     vim.notify('Copied "' .. path .. '" to the clipboard!')
 end, {})
 
-vim.api.nvim_create_user_command("Q", "q", {})
-vim.api.nvim_create_user_command("WQ", "wq", {})
-vim.api.nvim_create_user_command("W", "w", {})
-
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 
@@ -30,10 +26,13 @@ vim.keymap.set("n", "<C-l>", '<C-w>l')
 vim.keymap.set("n", "<leader>nn", '<cmd>:set relativenumber!<CR>')
 
 vim.keymap.set("n", "<C-a>", "<nop>")
+vim.keymap.set("n", "c", "<nop>")
 
 -- hop
 vim.keymap.set("n", "f", ":HopChar1<cr>")
 vim.keymap.set("x", "f", ":HopChar1<cr>")
+
+vim.keymap.set({ "i", "n" }, "<esc>", "<cmd>noh<cr><esc>", { desc = "Escape and Clear hlsearch" })
 
 ------harpoon
 local harpoon = require("harpoon")
@@ -47,6 +46,11 @@ vim.keymap.set("n", "<C-n>", function() harpoon:list():prev() end)
 vim.keymap.set("n", "<C-m>", function() harpoon:list():next() end)
 
 
+vim.keymap.set("v", "<", "<gv")
+vim.keymap.set("v", ">", ">gv")
+
+vim.keymap.set({ "i", "x", "n", "s" }, "<C-w>", "<cmd>w<cr><esc>", { desc = "Save File" })
+vim.keymap.set({ "i", "x", "n", "s" }, "<C-q>", "<cmd>q<cr><esc>", { desc = "Save File" })
 
 -- fugitive
 
@@ -57,10 +61,9 @@ vim.keymap.set("n", "<leader>gb", '<cmd>:Git blame<cr>', {
     desc = '[G]it blame'
 });
 
-
 --format
 
-vim.keymap.set('n','<C-f>', '<cmd>:LspZeroFormat<cr>',{remap=true})
+-- vim.keymap.set('n','<C-f>', '<cmd>:LspZeroFormat<cr>',{remap=true})
 -- vim.keymap.set('n','<C-f>', function()
 --     local filetype = vim.bo.filetype
 --     if (filetype == "eruby") then
@@ -91,3 +94,5 @@ hipatterns.setup({
     hex_color = hipatterns.gen_highlighter.hex_color(),
   },
 })
+vim.api.nvim_set_keymap('x', 'p', 'P', { noremap = true })
+vim.api.nvim_set_keymap('x', 'P', 'p', { noremap = true })

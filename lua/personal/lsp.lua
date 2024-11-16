@@ -23,34 +23,20 @@ end)
 require('mason').setup({})
 require('mason-lspconfig').setup({
     handlers = { lsp_zero.default_setup,
-        require('lspconfig').html.setup {
-            filetypes = {
-                "html", "eruby"
-            },
-            settings = {
-                html = {
-                    format = {
-                        wrapAttributes = "auto",
-                        templating = "true",
-
-                    }
-                }
-            }
-        },
         require('lspconfig').ruby_lsp.setup {
             root_dir = function()
                 return vim.fn.getcwd()
             end,
-            -- filetypes = {
-            --     "ruby", "eruby"
-            -- }
+            filetypes = {
+                "ruby", "eruby"
+            }
         },
         require 'lspconfig'.pylsp.setup {
             settings = {
                 pylsp = {
                     plugins = {
                         pycodestyle = {
-                            ignore = { 'W391' },
+                            ignore = { 'W391', 'W503', 'W504' },
                             maxLineLength = 100
                         }
                     }
@@ -61,18 +47,20 @@ require('mason-lspconfig').setup({
 })
 
 local cmp = require('cmp')
-
+-- local luasnip = require('luasnip')
+-- require("luasnip.loaders.from_vscode").lazy_load()
 cmp.setup({
-    sources = { {
-        name = 'path'
-    }, {
-        name = 'nvim_lsp'
-    }, {
-        name = 'nvim_lua'
-    }, {
-        name = 'buffer',
-        keyword_length = 3
-    } },
+    snippet = {
+        -- REQUIRED - you must specify a snippet engine
+        expand = function(args)
+            luasnip.lsp_expand(args.body)
+        end,
+    },
+    sources = {
+        { name = 'nvim_lsp', max_item_count = 2 },
+        -- { name = 'luasnip',  max_item_count = 2 } , -- For snippet suggestions
+        { name = 'buffer', max_item_count = 2 },
+    },
     formatting = lsp_zero.cmp_format(),
     -- mapping = {
     --     ['<C-\\>'] = cmp.mapping.confirm({ select = true }),
@@ -105,3 +93,22 @@ vim.keymap.set("n", "<leader>d", function()
         underline = isLspDiagnosticsVisible
     })
 end)
+
+
+require("conform").setup({
+    formatters_by_ft = {
+        eruby = { "erb_formatter" }, -- use erb_formatter
+    },
+    formatters = {
+        erb_formatter = {
+            command = "bundle",
+            args = { "exec", "erb-format", "--stdin" }
+        }
+    }
+})
+vim.keymap.set({ "n", "v" }, "<C-f>", function()
+    require("conform").format({
+        async = true,
+        lsp_fallback = true,
+    })
+end, { desc = "Format file or range (in visual mode)" })
